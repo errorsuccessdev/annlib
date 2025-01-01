@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdalign.h>
 
 void initAnnLibTests(void)
 {
@@ -31,36 +32,55 @@ void runArenaTests(void)
 
 	// makeArena tests
 	printSubheading(makeString("makeArena"));
-	u64 arenaLength = 4;
+	u64 arenaLength = 8;
 	arena a = makeArena(arenaLength);
 	printf("Arena was allocated successfully\n");
 	testPointer(false, a.content);
 	printf("Arena is correct length\n");
 	testU64(arenaLength, a.length);
+	printf("Arena's memory is initialized to 0\n");
+	testU64(0, deref(a.content));
 	printf("Arena.used is set to 0\n");
 	testU64(0, a.used);
 
 	// allocateFromArena and resetArena tests
 	printSubheading(makeString("allocateFromArena and resetArena"));
-	ptr(s32) p = allocateFromArena(addr(a), sizeof(s32));
+	ptr(s32) ptr1 = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
 	printf("Can allocate a pointer in arena\n");
-	testPointer(false, p);
+	testPointer(false, ptr1);
 	s32 value = INT_MIN;
-	deref(p) = value;
+	deref(ptr1) = value;
 	printf("Can set value of pointer\n");
-	testS32(value, deref(p));
-	ptr(s32) p2 = allocateFromArena(addr(a), sizeof(s32));
+	testS32(value, deref(ptr1));
+	ptr(s64) bigPtr = allocateFromArena(addr(a), sizeof(s64), alignof(s64));
 	printf("Cannot allocate if arena is out of space\n");
-	testPointer(true, p2); // Don't have enough space
-	resetArena(addr(a)); 
-	p2 = allocateFromArena(addr(a), sizeof(s32));
+	testPointer(true, bigPtr); // Don't have enough space
 	printf("Can allocate again after resetting arena\n");
-	testPointer(false, p2);
+	resetArena(addr(a));
+	ptr(s32) ptr2 = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
+	testPointer(false, ptr2);
 	printf("Arena's memory was set to 0 after reset\n");
-	testS32(0, deref(p2));
-	deref(p2) = value;
+	testS32(0, deref(ptr2));
+	deref(ptr2) = value;
 	printf("Can set value of pointer after reset\n");
-	testS32(value, deref(p2));
+	testS32(value, deref(ptr2));
+
+	// Cleanup to resize a
+	freeArena(a);
+
+	// Alignment tests
+	a = makeArena(1024);
+	printf("Arena is aligning addresses properly\n");
+	resetArena(addr(a));
+	ptr(u8) bumpArenaPtr = allocateFromArena(addr(a), sizeof(u8), alignof(u8));
+	ptr(s32) s32ptr = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
+	testU64(0, ((uintptr_t) s32ptr % alignof(s32)));
+	bumpArenaPtr = allocateFromArena(addr(a), sizeof(u8), alignof(u8));
+	ptr(s16) s16ptr = allocateFromArena(addr(a), sizeof(s16), alignof(s16));
+	testU64(0, ((uintptr_t) s16ptr % alignof(s16)));
+	bumpArenaPtr = allocateFromArena(addr(a), sizeof(u8), alignof(u8));
+	ptr(s64) s64ptr = allocateFromArena(addr(a), sizeof(s64), alignof(s64));
+	testU64(0, ((uintptr_t) s64ptr % alignof(s64)));
 
 	// Cleanup
 	freeArena(a);
@@ -172,7 +192,7 @@ void runStringTests_Conversion(void)
 	printSubheading(makeString("stringToNumber"));
 	printf("Positive number is converted to string\n");
 	arena a = makeArena(1024);
-	ptr(s32) number = allocateFromArena(addr(a), sizeof(s32));
+	ptr(s32) number = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
 	assert(number);
 	bool result = stringToNumber(makeString("123"), number);
 	testBool(true, result);
@@ -197,9 +217,11 @@ void runStringTests_Conversion(void)
 	printf("Converts valid pointer\n");
 	string str = pointerToString(addr(a), number);
 	s32 bufferLen = 20;
-	ptr(s8) buffer = allocateFromArena(addr(a), sizeof(s8) * bufferLen);
+	ptr(s8) buffer = allocateFromArena(
+		addr(a), sizeof(s8) * bufferLen, alignof(s8)
+	);
 	assert(buffer);
-	snprintf(buffer, bufferLen, "%zX", (size_t) number);
+	snprintf(buffer, bufferLen, "%zX", (uintptr_t) number);
 	buffer[bufferLen - 1] = 0;
 	string strFromBuffer = charPtrToString(buffer);
 	testString(strFromBuffer, str);

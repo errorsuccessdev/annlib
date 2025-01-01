@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <stdalign.h>
 
 void private_numberToString(
 	_Inout_ ptr(string) str, s32 startIndex, u64 number
@@ -58,7 +59,7 @@ string pointerToString(ptr(arena) a, ptr(void) p)
 	}
 	u64 startIndex = 0;
 	u32 length = sizeof(p) * 2;
-	ptr(u8) content = allocateFromArena(a, length);
+	ptr(u8) content = allocateFromArena(a, length, alignof(u8));
 	string str = { length, content };
 	u64 value = (u64) p;
 	for (u64 i = startIndex; i < str.length; i++)
@@ -179,7 +180,7 @@ string s64ToString(ptr(arena) a, s64 number)
 	}
 	u64 absNumber = (u64) absS64(number);
 	u64 length = getU64Length(absNumber) + 1;
-	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length);
+	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length, alignof(u8));
 	content[0] = '-';
 	string str = { length, content };
 	private_numberToString(addr(str), 1, absNumber);
@@ -202,7 +203,7 @@ void private_numberToString(
 string u64ToString(ptr(arena) a, u64 number)
 {
 	u64 length = getU64Length(number);
-	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length);
+	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length, alignof(u8));
 	string str = { length, content };
 	private_numberToString(addr(str), 0, number);
 	return str;
@@ -224,6 +225,7 @@ arena makeArena(u64 length)
 	ptr(u8) content = malloc(length);
 	assert(content);
 	arena a = { length, 0, content };
+	memset(a.content, 0, a.length);
 	return a;
 }
 
@@ -232,15 +234,24 @@ void freeArena(arena a)
 	free(a.content);
 }
 
-ptr(void) allocateFromArena(ptr(arena) a, u64 size)
+// Todo: This is borked
+ptr(void) allocateFromArena(ptr(arena) a, u64 size, size_t alignment)
 {
-	if (size > (a->length - a->used))
+	if ((size + alignment) > (a->length - a->used))
 	{
 		return NULL;
 	}
-	ptr(void) ret = a->content + a->used;
-	a->used += size;
-	return ret;
+	uintptr_t ret = (uintptr_t) (a->content + a->used);
+	uintptr_t theModulo = ret % (uintptr_t) alignment;
+	if (theModulo == 0)
+	{
+		a->used += size;
+		return (ptr(void)) ret;
+	}
+	uintptr_t offset = alignment - theModulo;
+	ret += offset;
+	a->used += (size + offset);
+	return (ptr(void)) ret;
 }
 
 void resetArena(ptr(arena) a)
@@ -273,7 +284,7 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 	va_end(args);
 
 	// Combine the strings
-	ptr(u8) content = allocateFromArena(a, length);
+	ptr(u8) content = allocateFromArena(a, length, alignof(u8));
 	va_start(args, numStrings);
 	s32 contentIndex = 0;
 	for (s32 i = 0; i < numStrings; i++)

@@ -48,7 +48,7 @@ typedef struct
 
 export arena makeArena(u64 length);
 export void freeArena(arena a);
-export ptr(void) allocateFromArena(ptr(arena) a, u64 size); 
+export ptr(void) allocateFromArena(ptr(arena) a, u64 size, size_t alignment); 
 export void resetArena(ptr(arena) a);
 /**********/
 
