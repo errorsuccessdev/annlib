@@ -48,8 +48,8 @@ typedef struct
 
 export arena makeArena(u64 length);
 export void freeArena(arena a);
-export ptr(void) allocateFromArena(ptr(arena) a, u64 size);
-export void resetArena(ptr(arena) a, bool shouldClear);
+export ptr(void) allocateFromArena(ptr(arena) a, u64 size); 
+export void resetArena(ptr(arena) a);
 /**********/
 
 /* Strings! Yay!!! */

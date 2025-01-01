@@ -232,13 +232,10 @@ ptr(void) allocateFromArena(ptr(arena) a, u64 size)
 	return ret;
 }
 
-void resetArena(ptr(arena) a, bool shouldClear)
+void resetArena(ptr(arena) a)
 {
 	a->used = 0;
-	if (shouldClear)
-	{
-		memset(a->content, 0, a->length);
-	}
+	memset(a->content, 0, a->length);
 }
 
 s64 abs(s64 number)

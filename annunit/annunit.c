@@ -78,7 +78,7 @@ void testS64(s64 expected, s64 actual)
 		s64ToString(addr(testArena), actual)
 	);
 	printResults((actual == expected), results);
-	resetArena(addr(testArena), true);
+	resetArena(addr(testArena));
 }
 
 void testU32(u32 expected, u32 actual)
@@ -95,7 +95,7 @@ void testU64(u64 expected, u64 actual)
 		u64ToString(addr(testArena), actual)
 	);
 	printResults((actual == expected), results);
-	resetArena(addr(testArena), true);
+	resetArena(addr(testArena));
 }
 
 void testString(string expected, string actual)
@@ -134,7 +134,7 @@ void testPointer(bool nullExpected, ptr(void) actual)
 		pointerToString(addr(testArena), actual)
 	);
 	printResults((isNull == nullExpected), results);
-	resetArena(addr(testArena), true);
+	resetArena(addr(testArena));
 }
 
 void testBool(bool expected, bool actual)
@@ -146,7 +146,7 @@ void testBool(bool expected, bool actual)
 		toString((actual) ? "true" : "false")
 	);
 	printResults((expected == actual), results);
-	resetArena(addr(testArena), true);
+	resetArena(addr(testArena));
 }
 
 void printHeading(string header)

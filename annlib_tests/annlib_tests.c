@@ -54,7 +54,7 @@ void runArenaTests(void)
 	ptr(s32) p2 = allocateFromArena(addr(a), sizeof(s32));
 	printf("Cannot allocate if arena is out of space\n");
 	testPointer(true, p2); // Don't have enough space
-	resetArena(addr(a), true); 
+	resetArena(addr(a)); 
 	p2 = allocateFromArena(addr(a), sizeof(s32));
 	printf("Can allocate again after resetting arena\n");
 	testPointer(false, p2);
@@ -145,7 +145,7 @@ void runStringTests_Utility(void)
 	ptr(s8) char1 = "A single string";
 	string result = buildString(addr(a), 1, toString(char1));
 	testString(toString(char1), result);
-	resetArena(addr(a), true);
+	resetArena(addr(a));
 	printf("Builds multiple strings\n");
 	ptr(s8) char2 = "Another rather long string";
 	result = buildString(addr(a), 4,
@@ -192,7 +192,7 @@ void runStringTests_Conversion(void)
 	result = stringToNumber(toString("12a3"), number);
 	testBool(false, result);
 	testS32(0, deref(number));
-	resetArena(addr(a), true);
+	resetArena(addr(a));
 
 	// pointerToString tests
 	printSubheading(toString("pointerToString"));
@@ -206,7 +206,7 @@ void runStringTests_Conversion(void)
 	testString(strFromBuffer, str);
 	printf("Null pointer returns NULL\n");
 	testString(toString("NULL"), pointerToString(addr(a), NULL));
-	resetArena(addr(a), true);
+	resetArena(addr(a));
 
 	// u64ToString tests
 	printSubheading(toString("u64ToString"));
