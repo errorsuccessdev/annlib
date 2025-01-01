@@ -10,6 +10,10 @@
 #include <stdarg.h>
 #include <assert.h>
 
+void private_numberToString(
+	_Inout_ ptr(string) str, s32 startIndex, u64 number
+);
+
 bool areStringsEqual(string first, string second)
 {
 	if (first.length != second.length)
@@ -172,39 +176,38 @@ string s32ToString(ptr(arena) a, s32 number)
 
 string s64ToString(ptr(arena) a, s64 number)
 {
-	ptr(u8) minus = NULL;
-	if (number < 0)
+	if (number >= 0)
 	{
-		minus = allocateFromArena(a, sizeof(u8));
-		deref(minus) = '-';
+		return u64ToString(a, (u64) number);
 	}
-	string numberStr = u64ToString(a, (u64) abs(number));
-	if (number < 0)
+	u64 absNumber = (u64) abs(number);
+	u64 length = getU64Length(absNumber) + 1;
+	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length);
+	content[0] = '-';
+	string str = { length, content };
+	private_numberToString(addr(str), 1, absNumber);
+	return str;
+}
+
+void private_numberToString(
+	_Inout_ ptr(string) str, s32 startIndex, u64 number
+)
+{
+	u64 inverse = str->length - 1;
+	for (u64 i = startIndex; i < str->length; i++)
 	{
-		numberStr.content = minus;
-		numberStr.length += 1;
+		str->content[inverse] = (u8) (number % 10) + '0';
+		inverse -= 1;
+		number /= 10;
 	}
-	return numberStr;
 }
 
 string u64ToString(ptr(arena) a, u64 number)
 {
-	u64 startIndex = 0;
 	u64 length = getU64Length(number);
 	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length);
 	string str = { length, content };
-	for (u64 i = startIndex; i < str.length; i++)
-	{
-		u64 inverse = str.length - i - 1;
-		str.content[inverse] = (u8) abs(number % 10) + '0';
-		number /= 10;
-		if (number == 0)
-		{
-			str.content += inverse;
-			str.length = i + 1;
-			break;
-		}
-	}
+	private_numberToString(addr(str), 0, number);
 	return str;
 }
 
