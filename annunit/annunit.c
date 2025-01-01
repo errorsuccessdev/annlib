@@ -1,5 +1,5 @@
 ﻿#include "annunit.h"
-#include "annlib/annlib.h"
+#include "annlib/annlib.c"
 
 #include <stdbool.h>
 #include <Windows.h>

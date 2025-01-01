@@ -1,6 +1,6 @@
-#include "annlib_tests/annlib_tests.h"
-#include "annlib/annlib.h"
-#include "annunit/annunit.h"
+#include "annlib_tests.h"
+
+#include "annunit/annunit.c"
 
 #include <limits.h>
 #include <stdbool.h>
@@ -8,17 +8,7 @@
 #include <assert.h>
 #include <stdalign.h>
 
-void initAnnLibTests(void)
-{
-	initTests();
-}
-
-void concludeAnnLibTests(void)
-{
-	concludeTests();
-}
-
-void runAllTests(void)
+void runAllAnnlibTests(void)
 {
 	runArenaTests();
 	runMathTests();

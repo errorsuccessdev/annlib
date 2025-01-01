@@ -23,14 +23,6 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\annlib\annlib.vcxproj">
-      <Project>{29e09ee5-c04d-485c-9aee-2974fa96143d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\annunit\annunit.vcxproj">
-      <Project>{2c938b7b-0434-4adc-8bbc-2cb17aa6c18e}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="annlib_tests.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -209,13 +209,13 @@ string u64ToString(ptr(arena) a, u64 number)
 	return str;
 }
 
-export string charPtrToString(ptr(s8) content)
+string charPtrToString(ptr(s8) content)
 {
 	string str = { strlen(content), content };
 	return str;
 }
 
-export string boolToString(bool b)
+string boolToString(bool b)
 {
 	return (b) ? makeString("true") : makeString("false");
 }

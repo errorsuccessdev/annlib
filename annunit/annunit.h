@@ -4,14 +4,14 @@
 
 #include <stdbool.h>
 
-export void testS32(s32 expected, s32 actual);
-export void testS64(s64 expected, s64 actual);
-export void testU32(u32 expected, u32 actual);
-export void testU64(u64 expected, u64 actual);
-export void testString(string expected, string actual);
-export void testPointer(bool nullExpected, ptr(void) actual);
-export void testBool(bool expected, bool actual);
-export void initTests(void);
-export void concludeTests(void);
-export void printHeading(string heading);
-export void printSubheading(string subheading);
+void testS32(s32 expected, s32 actual);
+void testS64(s64 expected, s64 actual);
+void testU32(u32 expected, u32 actual);
+void testU64(u64 expected, u64 actual);
+void testString(string expected, string actual);
+void testPointer(bool nullExpected, ptr(void) actual);
+void testBool(bool expected, bool actual);
+void initTests(void);
+void concludeTests(void);
+void printHeading(string heading);
+void printSubheading(string subheading);

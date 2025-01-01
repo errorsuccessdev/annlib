@@ -1,8 +1,9 @@
-﻿#include "annlib_tests.h"
+﻿#include "annunit/annunit.h"
+#include "annlib_tests.h"
 
 int main()
 {
-	initAnnLibTests();
-	runAllTests();
-	concludeAnnLibTests();
+	initTests();
+	runAllAnnlibTests();
+	concludeTests();
 }
