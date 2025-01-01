@@ -1,11 +1,22 @@
-﻿#include "annunit.h"
+﻿#pragma once 
+
+#include "annunit.h"
+#include "annlib/annlib.h"
+
+#include <stdbool.h>
+#include <Windows.h>
+#include <processenv.h>
+#include <handleapi.h>
+#include <stdio.h>
+#include <consoleapi.h>
+#include <assert.h>
 
 // Console colors
-typedef enum enumColor
+typedef enum
 {
 	DEFAULT, GREEN, RED, BOLD
 } Color;
-const char* colors[] =
+const ptr(s8) colors[] =
 {
    "\x1b[0m",  // Defualt
    "\x1b[32m", // Green
@@ -50,17 +61,29 @@ void concludeTests(void)
 		originalConsoleMode
 	);
 	assert(result);
+	freeArena(testArena);
 }
 
 void testS32(s32 expected, s32 actual)
 {
+	testS64((s64) expected, (s64) actual);
+}
+
+void testS64(s64 expected, s64 actual)
+{
 	string results = buildString(addr(testArena), 4,
 		toString("Expected: "),
-		numberToString(addr(testArena), expected),
+		s64ToString(addr(testArena), expected),
 		toString(", Actual: "),
-		numberToString(addr(testArena), actual)
+		s64ToString(addr(testArena), actual)
 	);
 	printResults((actual == expected), results);
+	resetArena(addr(testArena), true);
+}
+
+void testU32(u32 expected, u32 actual)
+{
+	testU64((u64) expected, (u64) actual);
 }
 
 void testU64(u64 expected, u64 actual)
@@ -72,15 +95,17 @@ void testU64(u64 expected, u64 actual)
 		u64ToString(addr(testArena), actual)
 	);
 	printResults((actual == expected), results);
+	resetArena(addr(testArena), true);
 }
 
 void testString(string expected, string actual)
 {
-	string results = buildString(addr(testArena), 4,
-		toString("Expected: "),
+	string results = buildString(addr(testArena), 5,
+		toString("Expected: \""),
 		expected,
-		toString(", Actual: "),
-		actual
+		toString("\", Actual: \""),
+		actual,
+		toString("\"")
 	);
 	printResults(areStringsEqual(actual, expected), results);
 }
@@ -99,7 +124,7 @@ void printResults(bool passed, string results)
 	printString(results, true);
 }
 
-void testPointer(bool nullExpected, void* actual)
+void testPointer(bool nullExpected, ptr(void) actual)
 {
 	bool isNull = (actual == NULL);
 	string results = buildString(addr(testArena), 4,
@@ -109,11 +134,24 @@ void testPointer(bool nullExpected, void* actual)
 		pointerToString(addr(testArena), actual)
 	);
 	printResults((isNull == nullExpected), results);
+	resetArena(addr(testArena), true);
 }
 
-void printHeader(string header)
+void testBool(bool expected, bool actual)
 {
-	printf("%s", colors[BOLD]);
+	string results = buildString(addr(testArena), 4,
+		toString("Expected: "),
+		toString((expected) ? "true" : "false"),
+		toString(", Actual: "),
+		toString((actual) ? "true" : "false")
+	);
+	printResults((expected == actual), results);
+	resetArena(addr(testArena), true);
+}
+
+void printHeading(string header)
+{
+	printf("\n%s", colors[BOLD]);
 	for (int i = 0; i < header.length; i++)
 	{
 		printf("=");
@@ -125,4 +163,11 @@ void printHeader(string header)
 		printf("=");
 	}
 	printf("\n%s", colors[DEFAULT]);
+}
+
+void printSubheading(string subheading)
+{
+	printf("\n%s", colors[BOLD]);
+	printString(subheading, false);
+	printf("%s\n", colors[DEFAULT]);
 }

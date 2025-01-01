@@ -1,5 +1,14 @@
 #pragma once
+
 #include "annlib.h"
+
+#include <stdbool.h>
+#include <vadefs.h>
+#include <sal.h>
+#include <malloc.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <assert.h>
 
 bool areStringsEqual(string first, string second)
 {
@@ -48,7 +57,7 @@ string pointerToString(ptr(arena) a, ptr(void) p)
 	}
 	u64 startIndex = 0;
 	u32 length = sizeof(p) * 2;
-	u8* content = allocateFromArena(a, length);
+	ptr(u8) content = allocateFromArena(a, length);
 	string str = { length, content };
 	u64 value = (u64) p;
 	for (u64 i = startIndex; i < str.length; i++)
@@ -126,15 +135,22 @@ s64 findString(string findString, string inString)
 u64 getU64Length(u64 number)
 {
 	u64 numDigits = 0;
-	while (number != 0)
+	if (number == 0)
 	{
-		numDigits += 1;
-		number /= 10;
+		numDigits = 1;
+	}
+	else
+	{
+		while (number != 0)
+		{
+			numDigits += 1;
+			number /= 10;
+		}
 	}
 	return numDigits;
 }
 
-u32 getNumberLength(s32 number)
+u32 getS32Length(s32 number)
 {
 	u32 numDigits = 0;
 	if (number <= 0)
@@ -147,41 +163,6 @@ u32 getNumberLength(s32 number)
 		number /= 10;
 	}
 	return numDigits;
-}
-
-string numberToString(ptr(arena) a, s32 number)
-{
-	s32 originalNumber = number;
-	u64 startIndex = 0;
-	u32 length = getNumberLength(originalNumber);
-	u8* content = allocateFromArena(a, length);
-	string str = { length, content };
-	for (u64 i = startIndex; i < str.length; i++)
-	{
-		u64 inverse = str.length - i - 1;
-		str.content[inverse] = (u8) abs(number % 10) + '0';
-		number /= 10;
-		if (number == 0)
-		{
-			if (originalNumber < 0)
-			{
-				if (inverse > 0 AND
-				(i + 2) <= str.length)
-				{
-					str.content[inverse - 1] = '-';
-					str.content += inverse - 1;
-					str.length = i + 2;
-				}
-			}
-			else
-			{
-				str.content += inverse;
-				str.length = i + 1;
-			}
-			break;
-		}
-	}
-	return str;
 }
 
 string s32ToString(ptr(arena) a, s32 number)
@@ -210,7 +191,7 @@ string u64ToString(ptr(arena) a, u64 number)
 {
 	u64 startIndex = 0;
 	u64 length = getU64Length(number);
-	u8* content = allocateFromArena(a, length);
+	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length);
 	string str = { length, content };
 	for (u64 i = startIndex; i < str.length; i++)
 	{
@@ -271,8 +252,6 @@ s64 abs(s64 number)
 
 string buildString(ptr(arena) a, s32 numStrings, ...)
 {
-	// How do we handle the arena not being big enough?
-
 	va_list args;
 	va_start(args, numStrings);
 
@@ -289,7 +268,7 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 	}
 
 	// Combine the strings
-	u8* content = allocateFromArena(a, length);
+	ptr(u8) content = allocateFromArena(a, length);
 	va_start(args, numStrings);
 	s32 contentIndex = 0;
 	for (s32 i = 0; i < numStrings; i++)
@@ -308,6 +287,6 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 
 void printString(string str, bool printNewline)
 {
-	char* fmt = (printNewline) ? "%.*s\n" : "%.*s";
+	ptr(s8) fmt = (printNewline) ? "%.*s\n" : "%.*s";
 	printf(fmt, (s32) str.length, str.content);
 }

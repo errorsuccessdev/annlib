@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "annlib", "annlib\annlib.vcxproj", "{29E09EE5-C04D-485C-9AEE-2974FA96143D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "annlib_tests", "annlib_tests\annlib_tests.vcxproj", "{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "annunit", "annunit\annunit.vcxproj", "{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,22 @@ Global
 		{29E09EE5-C04D-485C-9AEE-2974FA96143D}.Release|x64.Build.0 = Release|x64
 		{29E09EE5-C04D-485C-9AEE-2974FA96143D}.Release|x86.ActiveCfg = Release|Win32
 		{29E09EE5-C04D-485C-9AEE-2974FA96143D}.Release|x86.Build.0 = Release|Win32
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Debug|x64.ActiveCfg = Debug|x64
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Debug|x64.Build.0 = Debug|x64
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Debug|x86.ActiveCfg = Debug|Win32
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Debug|x86.Build.0 = Debug|Win32
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Release|x64.ActiveCfg = Release|x64
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Release|x64.Build.0 = Release|x64
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Release|x86.ActiveCfg = Release|Win32
+		{E7804929-3F54-4D9F-BE4B-C2F6DE25FFA9}.Release|x86.Build.0 = Release|Win32
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Debug|x64.ActiveCfg = Debug|x64
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Debug|x64.Build.0 = Debug|x64
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Debug|x86.ActiveCfg = Debug|Win32
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Debug|x86.Build.0 = Debug|Win32
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Release|x64.ActiveCfg = Release|x64
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Release|x64.Build.0 = Release|x64
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Release|x86.ActiveCfg = Release|Win32
+		{2C938B7B-0434-4ADC-8BBC-2CB17AA6C18E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

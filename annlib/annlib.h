@@ -1,14 +1,11 @@
 #pragma once
+
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <assert.h>
-#include <malloc.h>
-#include <stdarg.h>
+#include <sal.h>
 
-/* Nicer logic */
-#define OR  ||
+/* Nicer logic */#define OR  ||
 #define AND &&
 #define NOT !
 /***************/
@@ -16,6 +13,7 @@
 /* Win32 goodies */
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
+#define export __declspec(dllexport)
 /*****************/
 
 /* Fixed width types */
@@ -48,10 +46,10 @@ typedef struct
 	ptr(u8) content;
 } arena;
 
-arena makeArena(u64 length);
-void freeArena(arena a);
-ptr(void) allocateFromArena(ptr(arena) a, u64 size);
-void resetArena(ptr(arena) a, bool shouldClear);
+export arena makeArena(u64 length);
+export void freeArena(arena a);
+export ptr(void) allocateFromArena(ptr(arena) a, u64 size);
+export void resetArena(ptr(arena) a, bool shouldClear);
 /**********/
 
 /* Strings! Yay!!! */
@@ -63,21 +61,21 @@ typedef struct
 
 #define toString(s) (string) { strlen(s), s }
 
-bool areStringsEqual(string first, string second);
-bool stringStartsWith(string str, string startsWith);
-s64 findString(string findString, string inString);
-bool stringIsNumber(string str);
-bool stringToNumber(string str, _Out_ ptr(s32) number);
-string numberToString(ptr(arena) a, s32 number);
-string pointerToString(ptr(arena) a, ptr(void) p);
-string buildString(ptr(arena) a, s32 numStrings, ...);
-void printString(string str, bool printNewline);
-string u64ToString(ptr(arena) a, u64 number);
-string s64ToString(ptr(arena) a, s64 number);
-string s32ToString(ptr(arena) a, s32 number);
+export bool areStringsEqual(string first, string second);
+export bool stringStartsWith(string str, string startsWith);
+export s64 findString(string findString, string inString);
+export bool stringIsNumber(string str);
+export bool stringToNumber(string str, _Out_ ptr(s32) number);
+export string pointerToString(ptr(arena) a, ptr(void) p);
+export string buildString(ptr(arena) a, s32 numStrings, ...);
+export void printString(string str, bool printNewline);
+export string u64ToString(ptr(arena) a, u64 number);
+export string s64ToString(ptr(arena) a, s64 number);
+export string s32ToString(ptr(arena) a, s32 number);
 /*******************/
 
 /* Math */
-u32 getNumberLength(s32 number);
-s64 abs(s64 number);
+export u32 getS32Length(s32 number);
+export u64 getU64Length(u64 number);
+export s64 abs(s64 number);
 /********/
