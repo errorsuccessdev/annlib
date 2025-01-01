@@ -1,9 +1,6 @@
-#pragma once
-
 #include "annlib.h"
 
 #include <stdbool.h>
-#include <vadefs.h>
 #include <sal.h>
 #include <malloc.h>
 #include <stdio.h>
@@ -180,7 +177,7 @@ string s64ToString(ptr(arena) a, s64 number)
 	{
 		return u64ToString(a, (u64) number);
 	}
-	u64 absNumber = (u64) abs(number);
+	u64 absNumber = (u64) absS64(number);
 	u64 length = getU64Length(absNumber) + 1;
 	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length);
 	content[0] = '-';
@@ -241,13 +238,9 @@ void resetArena(ptr(arena) a)
 	memset(a->content, 0, a->length);
 }
 
-s64 abs(s64 number)
+s64 absS64(s64 number)
 {
-	if (number < 0)
-	{
-		number *= -1;
-	}
-	return number;
+	return (number < 0) ? -number : number;
 }
 
 string buildString(ptr(arena) a, s32 numStrings, ...)
@@ -266,6 +259,7 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 	{
 		return toString("");
 	}
+	va_end(args);
 
 	// Combine the strings
 	ptr(u8) content = allocateFromArena(a, length);
@@ -280,6 +274,7 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 			contentIndex += 1;
 		}
 	}
+	va_end(args);
 
 	string str = { length, content };
 	return str;
@@ -287,6 +282,6 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 
 void printString(string str, bool printNewline)
 {
-	ptr(s8) fmt = (printNewline) ? "%.*s\n" : "%.*s";
-	printf(fmt, (s32) str.length, str.content);
+	const s8* newline = (printNewline) ? "\n" : "";
+	printf("%.*s%s", (s32) str.length, str.content, newline);
 }

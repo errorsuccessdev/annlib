@@ -1,6 +1,4 @@
-﻿#pragma once 
-
-#include "annunit.h"
+﻿#include "annunit.h"
 #include "annlib/annlib.h"
 
 #include <stdbool.h>

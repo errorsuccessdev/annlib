@@ -1,5 +1,3 @@
-#pragma once
-
 #include "annlib_tests/annlib_tests.h"
 #include "annlib/annlib.h"
 #include "annunit/annunit.h"
@@ -88,14 +86,14 @@ void runMathTests(void)
 	printf("Correct length for zero\n");
 	testU64(1, getU64Length(0));
 
-	// abs tests
-	printSubheading(toString("abs"));
+	// absS64 tests
+	printSubheading(toString("absS64"));
 	printf("Correct absolute value for positive number\n");
-	testS64(LLONG_MAX, abs(LLONG_MAX));
+	testS64(LLONG_MAX, absS64(LLONG_MAX));
 	printf("Correct absolute value for negative number\n");
-	testS64(LLONG_MAX, abs(LLONG_MIN + 1));
+	testS64(LLONG_MAX, absS64(LLONG_MIN + 1));
 	printf("Correct absolute value for zero\n");
-	testS64(0, abs(0));
+	testS64(0, absS64(0));
 }
 
 // These tests cover the "search" or "equality" string functions

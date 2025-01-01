@@ -77,5 +77,5 @@ export string s32ToString(ptr(arena) a, s32 number);
 /* Math */
 export u32 getS32Length(s32 number);
 export u64 getU64Length(u64 number);
-export s64 abs(s64 number);
+export s64 absS64(s64 number);
 /********/
