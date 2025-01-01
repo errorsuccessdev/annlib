@@ -59,7 +59,7 @@ typedef struct
 	ptr(u8) content;
 } string;
 
-#define toString(s) (string) { strlen(s), s }
+#define makeString(s) (string) { sizeof(s) - 1, s }
 
 export bool areStringsEqual(string first, string second);
 export bool stringStartsWith(string str, string startsWith);
@@ -72,6 +72,8 @@ export void printString(string str, bool printNewline);
 export string u64ToString(ptr(arena) a, u64 number);
 export string s64ToString(ptr(arena) a, s64 number);
 export string s32ToString(ptr(arena) a, s32 number);
+export string charPtrToString(ptr(s8) content);
+export string boolToString(bool b);
 /*******************/
 
 /* Math */

@@ -70,9 +70,9 @@ void testS32(s32 expected, s32 actual)
 void testS64(s64 expected, s64 actual)
 {
 	string results = buildString(addr(testArena), 4,
-		toString("Expected: "),
+		makeString("Expected: "),
 		s64ToString(addr(testArena), expected),
-		toString(", Actual: "),
+		makeString(", Actual: "),
 		s64ToString(addr(testArena), actual)
 	);
 	printResults((actual == expected), results);
@@ -87,9 +87,9 @@ void testU32(u32 expected, u32 actual)
 void testU64(u64 expected, u64 actual)
 {
 	string results = buildString(addr(testArena), 4,
-		toString("Expected: "),
+		makeString("Expected: "),
 		u64ToString(addr(testArena), expected),
-		toString(", Actual: "),
+		makeString(", Actual: "),
 		u64ToString(addr(testArena), actual)
 	);
 	printResults((actual == expected), results);
@@ -99,11 +99,11 @@ void testU64(u64 expected, u64 actual)
 void testString(string expected, string actual)
 {
 	string results = buildString(addr(testArena), 5,
-		toString("Expected: \""),
+		makeString("Expected: \""),
 		expected,
-		toString("\", Actual: \""),
+		makeString("\", Actual: \""),
 		actual,
-		toString("\"")
+		makeString("\"")
 	);
 	printResults(areStringsEqual(actual, expected), results);
 }
@@ -126,9 +126,9 @@ void testPointer(bool nullExpected, ptr(void) actual)
 {
 	bool isNull = (actual == NULL);
 	string results = buildString(addr(testArena), 4,
-		toString("Expected: "),
-		toString((nullExpected) ? "NULL" : "Non-null"),
-		toString(", Actual: "),
+		makeString("Expected: "),
+		(nullExpected) ? makeString("NULL") : makeString("Non-null"),
+		makeString(", Actual: "),
 		pointerToString(addr(testArena), actual)
 	);
 	printResults((isNull == nullExpected), results);
@@ -138,10 +138,10 @@ void testPointer(bool nullExpected, ptr(void) actual)
 void testBool(bool expected, bool actual)
 {
 	string results = buildString(addr(testArena), 4,
-		toString("Expected: "),
-		toString((expected) ? "true" : "false"),
-		toString(", Actual: "),
-		toString((actual) ? "true" : "false")
+		makeString("Expected: "),
+		boolToString(expected),
+		makeString(", Actual: "),
+		boolToString(actual)
 	);
 	printResults((expected == actual), results);
 	resetArena(addr(testArena));

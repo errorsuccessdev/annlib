@@ -54,7 +54,7 @@ string pointerToString(ptr(arena) a, ptr(void) p)
 {
 	if (p == NULL)
 	{
-		return toString("NULL");
+		return makeString("NULL");
 	}
 	u64 startIndex = 0;
 	u32 length = sizeof(p) * 2;
@@ -208,6 +208,17 @@ string u64ToString(ptr(arena) a, u64 number)
 	return str;
 }
 
+export string charPtrToString(ptr(s8) content)
+{
+	string str = { strlen(content), content };
+	return str;
+}
+
+export string boolToString(bool b)
+{
+	return (b) ? makeString("true") : makeString("false");
+}
+
 arena makeArena(u64 length)
 {
 	ptr(u8) content = malloc(length);
@@ -257,7 +268,7 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 	}
 	if (length > (a->length - a->used))
 	{
-		return toString("");
+		return makeString("");
 	}
 	va_end(args);
 
