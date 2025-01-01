@@ -38,7 +38,7 @@ void initTests(void)
 	DWORD consoleMode = 0;
 	BOOL result = GetConsoleMode(
 		hOut,
-		&consoleMode
+		addr(consoleMode)
 	);
 	assert(result);
 
@@ -152,13 +152,13 @@ void testBool(bool expected, bool actual)
 void printHeading(string header)
 {
 	printf("\n%s", colors[BOLD]);
-	for (int i = 0; i < header.length; i++)
+	for (u64 i = 0; i < header.length; i++)
 	{
 		printf("=");
 	}
 	printf("\n");
 	printString(header, true);
-	for (int i = 0; i < header.length; i++)
+	for (u64 i = 0; i < header.length; i++)
 	{
 		printf("=");
 	}
