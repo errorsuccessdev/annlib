@@ -2,11 +2,25 @@
 #include "annlib/annlib.c"
 
 #include <stdbool.h>
+#if defined(_WIN32) || defined(WIN32) 
 #include <Windows.h>
 #include <processenv.h>
 #include <handleapi.h>
-#include <stdio.h>
 #include <consoleapi.h>
+#else
+
+#define DWORD int
+#define HANDLE int
+#define BOOL int
+
+#define GetStdHandle(x) 1
+#define INVALID_HANDLE_VALUE -1
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0
+#define SetConsoleMode(x, y) 1
+#define GetConsoleMode(x, y) 1
+
+#endif
+#include <stdio.h>
 #include <assert.h>
 
 // Console colors
