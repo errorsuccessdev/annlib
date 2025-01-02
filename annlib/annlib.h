@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <string.h>
 #include <stdbool.h>
 #include <sal.h>
 
@@ -28,12 +27,6 @@ typedef int32_t s32;
 typedef int64_t s64;
 /*********************/
 
-/* Nicer pointer stuff ? */
-#define ptr(type)  type*
-#define deref(p)   *p	
-#define addr(var)  &var
-/*************************/
-
 /* Array stuff */
 #define arrayCount(array) (sizeof(array) / sizeof((array)[0]))
 /***************/
@@ -41,22 +34,22 @@ typedef int64_t s64;
 /* Arenas */
 typedef struct 
 {
-	u64		length;
-	u64		used;
-	ptr(u8) content;
+	u64	length;
+	u64	used;
+	u8*	content;
 } arena;
 
 arena makeArena(u64 length);
-void freeArena(arena a);
-ptr(void) allocateFromArena(ptr(arena) a, u64 size, size_t alignment); 
-void resetArena(ptr(arena) a);
+void  freeArena(arena a);
+void* allocateFromArena(arena* a, u64 size, size_t alignment); 
+void  resetArena(arena* a);
 /**********/
 
 /* Strings! Yay!!! */
 typedef struct
 {
-	u64		length;
-	ptr(u8) content;
+	u64	length;
+	s8* content;
 } string;
 
 #define makeString(s) (string) { sizeof(s) - 1, s }
@@ -65,14 +58,14 @@ bool areStringsEqual(string first, string second);
 bool stringStartsWith(string str, string startsWith);
 s64 findString(string findString, string inString);
 bool stringIsNumber(string str);
-bool stringToNumber(string str, _Out_ ptr(s32) number);
-string pointerToString(ptr(arena) a, ptr(void) p);
-string buildString(ptr(arena) a, s32 numStrings, ...);
+bool stringToNumber(string str, _Out_ s32* number);
+string pointerToString(arena* a, void* p);
+string buildString(arena* a, s32 numStrings, ...);
 void printString(string str, bool printNewline);
-string u64ToString(ptr(arena) a, u64 number);
-string s64ToString(ptr(arena) a, s64 number);
-string s32ToString(ptr(arena) a, s32 number);
-string charPtrToString(ptr(s8) content);
+string u64ToString(arena* a, u64 number);
+string s64ToString(arena* a, s64 number);
+string s32ToString(arena* a, s32 number);
+string charPtrToString(s8* content);
 string boolToString(bool b);
 /*******************/
 
