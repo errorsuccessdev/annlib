@@ -29,31 +29,31 @@ void runArenaTests(void)
 	printf("Arena is correct length\n");
 	testU64(arenaLength, a.length);
 	printf("Arena's memory is initialized to 0\n");
-	testU64(0, deref(a.content));
+	testU64(0, *a.content);
 	printf("Arena.used is set to 0\n");
 	testU64(0, a.used);
 
 	// allocateFromArena and resetArena tests
 	printSubheading(makeString("allocateFromArena and resetArena"));
-	ptr(s32) ptr1 = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
+	s32* ptr1 = allocateFromArena(&a, sizeof(s32), alignof(s32));
 	printf("Can allocate a pointer in arena\n");
 	testPointer(false, ptr1);
 	s32 value = INT_MIN;
-	deref(ptr1) = value;
+	*ptr1 = value;
 	printf("Can set value of pointer\n");
-	testS32(value, deref(ptr1));
-	ptr(s64) bigPtr = allocateFromArena(addr(a), sizeof(s64), alignof(s64));
+	testS32(value, *ptr1);
+	s64* bigPtr = allocateFromArena(&a, sizeof(s64), alignof(s64));
 	printf("Cannot allocate if arena is out of space\n");
 	testPointer(true, bigPtr); // Don't have enough space
 	printf("Can allocate again after resetting arena\n");
-	resetArena(addr(a));
-	ptr(s32) ptr2 = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
+	resetArena(&a);
+	s32* ptr2 = allocateFromArena(&a, sizeof(s32), alignof(s32));
 	testPointer(false, ptr2);
 	printf("Arena's memory was set to 0 after reset\n");
-	testS32(0, deref(ptr2));
-	deref(ptr2) = value;
+	testS32(0, *ptr2);
+	*ptr2 = value;
 	printf("Can set value of pointer after reset\n");
-	testS32(value, deref(ptr2));
+	testS32(value, *ptr2);
 
 	// Cleanup to resize a
 	freeArena(a);
@@ -61,15 +61,15 @@ void runArenaTests(void)
 	// Alignment tests
 	a = makeArena(1024);
 	printf("Arena is aligning addresses properly\n");
-	resetArena(addr(a));
-	ptr(u8) bumpArenaPtr = allocateFromArena(addr(a), sizeof(u8), alignof(u8));
-	ptr(s32) s32ptr = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
+	resetArena(&a);
+	u8* bumpArenaPtr = allocateFromArena(&a, sizeof(u8), alignof(u8));
+	s32* s32ptr = allocateFromArena(&a, sizeof(s32), alignof(s32));
 	testU64(0, ((uintptr_t) s32ptr % alignof(s32)));
-	bumpArenaPtr = allocateFromArena(addr(a), sizeof(u8), alignof(u8));
-	ptr(s16) s16ptr = allocateFromArena(addr(a), sizeof(s16), alignof(s16));
+	bumpArenaPtr = allocateFromArena(&a, sizeof(u8), alignof(u8));
+	s16* s16ptr = allocateFromArena(&a, sizeof(s16), alignof(s16));
 	testU64(0, ((uintptr_t) s16ptr % alignof(s16)));
-	bumpArenaPtr = allocateFromArena(addr(a), sizeof(u8), alignof(u8));
-	ptr(s64) s64ptr = allocateFromArena(addr(a), sizeof(s64), alignof(s64));
+	bumpArenaPtr = allocateFromArena(&a, sizeof(u8), alignof(u8));
+	s64* s64ptr = allocateFromArena(&a, sizeof(s64), alignof(s64));
 	testU64(0, ((uintptr_t) s64ptr % alignof(s64)));
 
 	// Cleanup
@@ -151,12 +151,12 @@ void runStringTests_Utility(void)
 	arena a = makeArena(50);
 	printf("Builds a single string\n");
 	string str = makeString("A single string");
-	string result = buildString(addr(a), 1, str);
+	string result = buildString(&a, 1, str);
 	testString(str, result);
-	resetArena(addr(a));
+	resetArena(&a);
 	printf("Builds multiple strings\n");
 	str = makeString("Another rather long string");
-	result = buildString(addr(a), 4,
+	result = buildString(&a, 4,
 		makeString("Another "),
 		makeString("rather "),
 		makeString("long "),
@@ -164,7 +164,7 @@ void runStringTests_Utility(void)
 	);
 	testString(str, result);
 	printf("String is empty when arena is not big enough\n");
-	result = buildString(addr(a), 1,
+	result = buildString(&a, 1,
 		makeString("A string that is much too big")
 	);
 	testString(makeString(""), result);
@@ -182,33 +182,33 @@ void runStringTests_Conversion(void)
 	printSubheading(makeString("stringToNumber"));
 	printf("Positive number is converted to string\n");
 	arena a = makeArena(1024);
-	ptr(s32) number = allocateFromArena(addr(a), sizeof(s32), alignof(s32));
+	s32* number = allocateFromArena(&a, sizeof(s32), alignof(s32));
 	assert(number);
 	bool result = stringToNumber(makeString("123"), number);
 	testBool(true, result);
-	testS32(123, deref(number));
+	testS32(123, *number);
 	printf("Negative number is converted to string\n");
 	result = stringToNumber(makeString("-123"), number);
 	testBool(true, result);
-	testS32(-123, deref(number));
+	testS32(-123, *number);
 	printf("Zero is converted to string\n");
 	result = stringToNumber(makeString("0"), number);
 	testBool(true, result);
-	testS32(0, deref(number));
-	deref(number) = 123; // Reset number to non-zero value
+	testS32(0, *number);
+	*number = 123; // Reset number to non-zero value
 	printf("Invalid input is not converted and set to 0\n");
 	result = stringToNumber(makeString("12a3"), number);
 	testBool(false, result);
-	testS32(0, deref(number));
-	resetArena(addr(a));
+	testS32(0, *number);
+	resetArena(&a);
 
 	// pointerToString tests
 	printSubheading(makeString("pointerToString"));
 	printf("Converts valid pointer\n");
-	string str = pointerToString(addr(a), number);
+	string str = pointerToString(&a, number);
 	s32 bufferLen = 20;
-	ptr(s8) buffer = allocateFromArena(
-		addr(a), sizeof(s8) * bufferLen, alignof(s8)
+	s8* buffer = allocateFromArena(
+		&a, sizeof(s8) * bufferLen, alignof(s8)
 	);
 	assert(buffer);
 	snprintf(buffer, bufferLen, "%zX", (uintptr_t) number);
@@ -216,40 +216,40 @@ void runStringTests_Conversion(void)
 	string strFromBuffer = charPtrToString(buffer);
 	testString(strFromBuffer, str);
 	printf("Null pointer returns NULL\n");
-	testString(makeString("NULL"), pointerToString(addr(a), NULL));
-	resetArena(addr(a));
+	testString(makeString("NULL"), pointerToString(&a, NULL));
+	resetArena(&a);
 
 	// u64ToString tests
 	printSubheading(makeString("u64ToString"));
 	printf("Positive number is converted to string\n");
-	str = u64ToString(addr(a), ULLONG_MAX);
+	str = u64ToString(&a, ULLONG_MAX);
 	testString(makeString("18446744073709551615"), str);
 	printf("Zero is converted to string\n");
-	str = u64ToString(addr(a), 0);
+	str = u64ToString(&a, 0);
 	testString(makeString("0"), str);
 
 	// s64ToString tests
 	printSubheading(makeString("s64ToString"));
 	printf("Positive number is converted to string\n");
-	str = s64ToString(addr(a), LLONG_MAX);
+	str = s64ToString(&a, LLONG_MAX);
 	testString(makeString("9223372036854775807"), str);
 	printf("Negative number is converted to string\n");
-	str = s64ToString(addr(a), LLONG_MIN);
+	str = s64ToString(&a, LLONG_MIN);
 	testString(makeString("-9223372036854775808"), str);
 	printf("Zero is converted to string\n");
-	str = s64ToString(addr(a), 0);
+	str = s64ToString(&a, 0);
 	testString(makeString("0"), str);
 
 	// s32ToString tests
 	printSubheading(makeString("s32ToString"));
 	printf("Positive number is converted to string\n");
-	str = s32ToString(addr(a), INT_MAX);
+	str = s32ToString(&a, INT_MAX);
 	testString(makeString("2147483647"), str);
 	printf("Negative number is converted to string\n");
-	str = s32ToString(addr(a), INT_MIN);
+	str = s32ToString(&a, INT_MIN);
 	testString(makeString("-2147483648"), str);
 	printf("Zero is converted to string\n");
-	str = s32ToString(addr(a), 0);
+	str = s32ToString(&a, 0);
 	testString(makeString("0"), str);
 
 	// Cleanup

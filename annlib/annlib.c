@@ -6,9 +6,10 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <stdalign.h>
+#include <string.h>
 
 void private_numberToString(
-	_Inout_ ptr(string) str, s32 startIndex, u64 number
+	_Inout_ string* str, s32 startIndex, u64 number
 );
 
 bool areStringsEqual(string first, string second)
@@ -50,7 +51,7 @@ bool stringIsNumber(string str)
 	return true;
 }
 
-string pointerToString(ptr(arena) a, ptr(void) p)
+string pointerToString(arena* a, void* p)
 {
 	if (p == NULL)
 	{
@@ -58,7 +59,7 @@ string pointerToString(ptr(arena) a, ptr(void) p)
 	}
 	u64 startIndex = 0;
 	u32 length = sizeof(p) * 2;
-	ptr(u8) content = allocateFromArena(a, length, alignof(u8));
+	u8* content = allocateFromArena(a, length, alignof(u8));
 	string str = { length, content };
 	u64 value = (u64) p;
 	for (u64 i = startIndex; i < str.length; i++)
@@ -85,9 +86,9 @@ string pointerToString(ptr(arena) a, ptr(void) p)
 	return str;
 }
 
-bool stringToNumber(string str, _Out_ ptr(s32) number)
+bool stringToNumber(string str, _Out_ s32* number)
 {
-	deref(number) = 0;
+	*number = 0;
 	if (NOT stringIsNumber(str))
 	{
 		return false;
@@ -105,7 +106,7 @@ bool stringToNumber(string str, _Out_ ptr(s32) number)
 	{
 		temp = (temp * 10) + (str.content[i] - '0');
 	}
-	deref(number) = (isNegative) ? -temp : temp;
+	*number = (isNegative) ? -temp : temp;
 	return true;
 }
 
@@ -166,12 +167,12 @@ u32 getS32Length(s32 number)
 	return numDigits;
 }
 
-string s32ToString(ptr(arena) a, s32 number)
+string s32ToString(arena* a, s32 number)
 {
 	return s64ToString(a, (s64) number);
 }
 
-string s64ToString(ptr(arena) a, s64 number)
+string s64ToString(arena* a, s64 number)
 {
 	if (number >= 0)
 	{
@@ -179,15 +180,15 @@ string s64ToString(ptr(arena) a, s64 number)
 	}
 	u64 absNumber = (u64) absS64(number);
 	u64 length = getU64Length(absNumber) + 1;
-	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length, alignof(u8));
+	u8* content = allocateFromArena(a, sizeof(u8) * length, alignof(u8));
 	content[0] = '-';
 	string str = { length, content };
-	private_numberToString(addr(str), 1, absNumber);
+	private_numberToString(&str, 1, absNumber);
 	return str;
 }
 
 void private_numberToString(
-	_Inout_ ptr(string) str, s32 startIndex, u64 number
+	_Inout_ string* str, s32 startIndex, u64 number
 )
 {
 	u64 inverse = str->length - 1;
@@ -199,16 +200,16 @@ void private_numberToString(
 	}
 }
 
-string u64ToString(ptr(arena) a, u64 number)
+string u64ToString(arena* a, u64 number)
 {
 	u64 length = getU64Length(number);
-	ptr(u8) content = allocateFromArena(a, sizeof(u8) * length, alignof(u8));
+	u8* content = allocateFromArena(a, sizeof(u8) * length, alignof(u8));
 	string str = { length, content };
-	private_numberToString(addr(str), 0, number);
+	private_numberToString(&str, 0, number);
 	return str;
 }
 
-string charPtrToString(ptr(s8) content)
+string charPtrToString(s8* content)
 {
 	string str = { strlen(content), content };
 	return str;
@@ -221,7 +222,7 @@ string boolToString(bool b)
 
 arena makeArena(u64 length)
 {
-	ptr(u8) content = malloc(length);
+	u8* content = malloc(length);
 	assert(content);
 	arena a = { length, 0, content };
 	memset(a.content, 0, a.length);
@@ -234,7 +235,7 @@ void freeArena(arena a)
 }
 
 // Todo: This is borked
-ptr(void) allocateFromArena(ptr(arena) a, u64 size, size_t alignment)
+void* allocateFromArena(arena* a, u64 size, size_t alignment)
 {
 	if ((size + alignment) > (a->length - a->used))
 	{
@@ -245,15 +246,15 @@ ptr(void) allocateFromArena(ptr(arena) a, u64 size, size_t alignment)
 	if (theModulo == 0)
 	{
 		a->used += size;
-		return (ptr(void)) ret;
+		return (void*) ret;
 	}
 	uintptr_t offset = alignment - theModulo;
 	ret += offset;
 	a->used += (size + offset);
-	return (ptr(void)) ret;
+	return (void*) ret;
 }
 
-void resetArena(ptr(arena) a)
+void resetArena(arena* a)
 {
 	a->used = 0;
 	memset(a->content, 0, a->length);
@@ -264,7 +265,7 @@ s64 absS64(s64 number)
 	return (number < 0) ? -number : number;
 }
 
-string buildString(ptr(arena) a, s32 numStrings, ...)
+string buildString(arena* a, s32 numStrings, ...)
 {
 	va_list args;
 	va_start(args, numStrings);
@@ -283,7 +284,7 @@ string buildString(ptr(arena) a, s32 numStrings, ...)
 	va_end(args);
 
 	// Combine the strings
-	ptr(u8) content = allocateFromArena(a, length, alignof(u8));
+	u8* content = allocateFromArena(a, length, alignof(u8));
 	va_start(args, numStrings);
 	s32 contentIndex = 0;
 	for (s32 i = 0; i < numStrings; i++)

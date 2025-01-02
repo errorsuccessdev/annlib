@@ -28,7 +28,7 @@ typedef enum
 {
 	DEFAULT, GREEN, RED, BOLD
 } Color;
-const ptr(s8) colors[] =
+const s8* colors[] =
 {
    "\x1b[0m",  // Defualt
    "\x1b[32m", // Green
@@ -50,7 +50,7 @@ void initTests(void)
 	DWORD consoleMode = 0;
 	BOOL result = GetConsoleMode(
 		hOut,
-		addr(consoleMode)
+		&consoleMode
 	);
 	assert(result);
 
@@ -83,14 +83,14 @@ void testS32(s32 expected, s32 actual)
 
 void testS64(s64 expected, s64 actual)
 {
-	string results = buildString(addr(testArena), 4,
+	string results = buildString(&testArena, 4,
 		makeString("Expected: "),
-		s64ToString(addr(testArena), expected),
+		s64ToString(&testArena, expected),
 		makeString(", Actual: "),
-		s64ToString(addr(testArena), actual)
+		s64ToString(&testArena, actual)
 	);
 	printResults((actual == expected), results);
-	resetArena(addr(testArena));
+	resetArena(&testArena);
 }
 
 void testU32(u32 expected, u32 actual)
@@ -100,19 +100,19 @@ void testU32(u32 expected, u32 actual)
 
 void testU64(u64 expected, u64 actual)
 {
-	string results = buildString(addr(testArena), 4,
+	string results = buildString(&testArena, 4,
 		makeString("Expected: "),
-		u64ToString(addr(testArena), expected),
+		u64ToString(&testArena, expected),
 		makeString(", Actual: "),
-		u64ToString(addr(testArena), actual)
+		u64ToString(&testArena, actual)
 	);
 	printResults((actual == expected), results);
-	resetArena(addr(testArena));
+	resetArena(&testArena);
 }
 
 void testString(string expected, string actual)
 {
-	string results = buildString(addr(testArena), 5,
+	string results = buildString(&testArena, 5,
 		makeString("Expected: \""),
 		expected,
 		makeString("\", Actual: \""),
@@ -136,29 +136,29 @@ void printResults(bool passed, string results)
 	printString(results, true);
 }
 
-void testPointer(bool nullExpected, ptr(void) actual)
+void testPointer(bool nullExpected, void* actual)
 {
 	bool isNull = (actual == NULL);
-	string results = buildString(addr(testArena), 4,
+	string results = buildString(&testArena, 4,
 		makeString("Expected: "),
 		(nullExpected) ? makeString("NULL") : makeString("Non-null"),
 		makeString(", Actual: "),
-		pointerToString(addr(testArena), actual)
+		pointerToString(&testArena, actual)
 	);
 	printResults((isNull == nullExpected), results);
-	resetArena(addr(testArena));
+	resetArena(&testArena);
 }
 
 void testBool(bool expected, bool actual)
 {
-	string results = buildString(addr(testArena), 4,
+	string results = buildString(&testArena, 4,
 		makeString("Expected: "),
 		boolToString(expected),
 		makeString(", Actual: "),
 		boolToString(actual)
 	);
 	printResults((expected == actual), results);
-	resetArena(addr(testArena));
+	resetArena(&testArena);
 }
 
 void printHeading(string header)
