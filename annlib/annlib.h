@@ -3,7 +3,14 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+
+#if defined(_WIN32) || defined(WIN32)
 #include <sal.h>
+#else
+#define _Inout_
+#define _In_
+#define _Out_
+#endif
 
 /* Nicer logic */
 #define OR  ||

@@ -1,7 +1,6 @@
 #include "annlib.h"
 
 #include <stdbool.h>
-#include <sal.h>
 #include <malloc.h>
 #include <stdio.h>
 #include <stdarg.h>
